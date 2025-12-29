@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WonderPark - Rides & Activities</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <!-- ApexCharts for graphs -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">
+    <style>
+        :root {
+            --sky-blue: #4fc3f7;
+            --primary-blue: #0288d1;
+            --dark-blue: #01579b;
+            --light-bg: #e3f2fd;
+            --sidebar-width: 260px;
+            --success-green: #28a745;
+            --warning-orange: #ffc107;
+            --danger-red: #dc3545;
+            --purple: #6f42c1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+            color: white;
+            padding: 0;
+            z-index: 1000;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .park-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .park-logo span {
+            color: var(--sky-blue);
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--sky-blue);
+        }
+        
+        .nav-link i {
+            width: 25px;
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 45px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: var(--light-bg);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-blue);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sky-blue), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+        
+        .notifications {
+            position: relative;
+            margin-right: 25px;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .page-title h1 {
+            color: var(--dark-blue);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .page-title p {
+            color: #666;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-primary-custom {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary-custom:hover {
+            background: var(--dark-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            margin-bottom: 30px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            height: 100%;
+            transition: transform 0.3s;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 15px;
+        }
+        
+        .stats-icon.blue {
+            background: rgba(79, 195, 247, 0.1);
+            color: var(--primary-blue);
+        }
+        
+        .stats-icon.green {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-green);
+        }
+        
+        .stats-icon.orange {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning-orange);
+        }
+        
+        .stats-icon.red {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-red);
+        }
+        
+        .stats-icon.purple {
+            background: rgba(111, 66, 193, 0.1);
+            color: var(--purple);
+        }
+        
+        .stats-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stats-info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Tabs Navigation */
+        .rides-tabs {
+            background: white;
+            border-radius: 12px;
+            padding: 0 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-tabs {
+            border-bottom: none;
+        }
+        
+        .nav-tabs .nav-link {
+            padding: 15px 25px;
+            color: #666;
+            border: none;
+            border-radius: 0;
+            position: relative;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-blue);
+            background: transparent;
+            border-bottom: 3px solid var(--primary-blue);
+        }
+        
+        /* Rides Grid */
+        .rides-section {
+            margin-bottom: 30px;
+        }
+        
+        .rides-filter {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-control {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            min-width: 180px;
+        }
+        
+        /* Ride Cards */
+        .rides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .ride-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            border-top: 5px solid var(--primary-blue);
+        }
+        
+        .ride-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .ride-image {
+            height: 180px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--sky-blue), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+        }
+        
+        .ride-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .ride-status-operational {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-green);
+        }
+        
+        .ride-status-maintenance {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-orange);
+        }
+        
+        .ride-status-closed {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-red);
+        }
+        
+        .ride-card-content {
+            padding: 20px;
+        }
+        
+        .ride-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+        }
+        
+        .ride-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .ride-category {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .ride-rating {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+        
+        .ride-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ride-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .ride-detail i {
+            color: var(--primary-blue);
+            width: 16px;
+        }
+        
+        .ride-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .ride-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ride-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .ride-btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .ride-btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        
+        .ride-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Maintenance Log */
+        .maintenance-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: var(--dark-blue);
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+        
+        .maintenance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .maintenance-table thead {
+            background: var(--light-bg);
+        }
+        
+        .maintenance-table th {
+            padding: 15px;
+            text-align: left;
+            color: var(--dark-blue);
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .maintenance-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        
+        .maintenance-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .priority-high {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-red);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .priority-medium {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning-orange);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .priority-low {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-green);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+        
+        .chart-title {
+            color: var(--dark-blue);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar:hover {
+                width: var(--sidebar-width);
+            }
+            
+            .sidebar .nav-link span {
+                opacity: 0;
+            }
+            
+            .sidebar:hover .nav-link span {
+                opacity: 1;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .sidebar-header .logo-text {
+                display: none;
+            }
+            
+            .sidebar:hover .logo-text {
+                display: block;
+            }
+            
+            .rides-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .rides-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+        
+        /* Modal Styles */
+        .ride-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .ride-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+     <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="park-logo">
+                <i class="fas fa-ferris-wheel me-2"></i>
+                <span class="logo-text">Wonder<span>Park</span></span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ticketsales.html">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Ticket Sales</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="visitors.html">
+                        <i class="fas fa-users"></i>
+                        <span>Visitors</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ridesactivities.html">
+                        <i class="fas fa-robot"></i>
+                        <span>Rides & Activities</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="terminals.html">
+                        <i class="fas fa-terminal"></i>
+                        <span>Terminals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="analytics.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="users.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-4">
+                    <a class="nav-link" href="login.html">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="d-flex align-items-center">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search rides, activities, maintenance...">
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <div class="notifications">
+                    <i class="fas fa-bell fa-lg" style="color: var(--primary-blue);"></i>
+                    <span class="notification-badge">7</span>
+                </div>
+                <div class="user-avatar">AS</div>
+                <div>
+                    <h6 class="mb-0">Admin Saleem</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Park Manager</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <h1><i class="fas fa-robot me-2"></i>Rides & Activities</h1>
+                <p>Manage all rides, activities, and maintenance operations</p>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-primary-custom" onclick="openAddRideModal()">
+                    <i class="fas fa-plus-circle"></i> Add New Ride
+                </button>
+                <button class="btn-primary-custom" onclick="scheduleMaintenance()">
+                    <i class="fas fa-tools"></i> Schedule Maintenance
+                </button>
+            </div>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="row stats-container">
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon blue">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 id="totalRides">28</h3>
+                        <p>Total Rides</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon green">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 id="operationalRides">24</h3>
+                        <p>Operational</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon orange">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 id="maintenanceRides">3</h3>
+                        <p>Under Maintenance</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon red">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 id="closedRides">1</h3>
+                        <p>Closed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon purple">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 id="totalRiders">3.2K</h3>
+                        <p>Today's Riders</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon blue">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h3 id="avgRating">4.7</h3>
+                        <p>Avg. Rating</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <div class="rides-tabs">
+            <ul class="nav nav-tabs" id="ridesTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                        <i class="fas fa-list me-2"></i>All Rides & Activities
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="thrill-tab" data-bs-toggle="tab" data-bs-target="#thrill" type="button" role="tab">
+                        <i class="fas fa-bolt me-2"></i>Thrill Rides
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="family-tab" data-bs-toggle="tab" data-bs-target="#family" type="button" role="tab">
+                        <i class="fas fa-home me-2"></i>Family Rides
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="kids-tab" data-bs-toggle="tab" data-bs-target="#kids" type="button" role="tab">
+                        <i class="fas fa-child me-2"></i>Kids Rides
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="water-tab" data-bs-toggle="tab" data-bs-target="#water" type="button" role="tab">
+                        <i class="fas fa-water me-2"></i>Water Rides
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="ridesTabContent">
+            <!-- All Rides Tab -->
+            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                <!-- Filter Section -->
+                <div class="rides-filter">
+                    <div class="filter-controls">
+                        <select class="filter-control" id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="operational">Operational</option>
+                            <option value="maintenance">Under Maintenance</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                        <select class="filter-control" id="zoneFilter">
+                            <option value="all">All Zones</option>
+                            <option value="adventure">Adventure Zone</option>
+                            <option value="fantasy">Fantasy Land</option>
+                            <option value="water">Water World</option>
+                            <option value="thrill">Thrill Valley</option>
+                            <option value="kids">Kids Kingdom</option>
+                        </select>
+                        <select class="filter-control" id="capacityFilter">
+                            <option value="all">All Capacity</option>
+                            <option value="low">Low (1-2)</option>
+                            <option value="medium">Medium (3-6)</option>
+                            <option value="high">High (6+)</option>
+                        </select>
+                        <button class="btn-filter btn-apply" onclick="applyRideFilters()">
+                            <i class="fas fa-filter me-2"></i>Apply Filters
+                        </button>
+                        <button class="btn-filter btn-reset" onclick="resetRideFilters()">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Rides Grid -->
+                <div class="rides-grid" id="ridesGrid">
+                    <!-- Ride cards will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Other tabs content would be similar -->
+        </div>
+        
+        <!-- Maintenance Log -->
+        <div class="maintenance-section">
+            <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-clipboard-list me-2"></i>Recent Maintenance Activities</h3>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewAllMaintenance()">
+                    <i class="fas fa-eye me-1"></i>View All
+                </button>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="maintenance-table">
+                    <thead>
+                        <tr>
+                            <th>Ride Name</th>
+                            <th>Maintenance Type</th>
+                            <th>Priority</th>
+                            <th>Scheduled Date</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maintenanceTableBody">
+                        <!-- Maintenance data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div class="row charts-section">
+            <div class="col-lg-6">
+                <div class="chart-card">
+                    <h5 class="chart-title"><i class="fas fa-chart-bar me-2"></i>Ride Utilization Today</h5>
+                    <div id="utilizationChart" style="height: 300px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="chart-card">
+                    <h5 class="chart-title"><i class="fas fa-chart-line me-2"></i>Wait Time Trends</h5>
+                    <div id="waitTimeChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Ride Modal -->
+    <div class="ride-modal" id="rideModal">
+        <div class="ride-modal-content">
+            <button class="close-modal" onclick="closeRideModal()">&times;</button>
+            <h3 class="mb-4" id="modalTitle">Add New Ride</h3>
+            
+            <form id="rideForm">
+                <div class="form-group">
+                    <label class="form-label" for="rideName">Ride Name</label>
+                    <input type="text" class="form-control" id="rideName" placeholder="Enter ride name" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="rideCategory">Category</label>
+                        <select class="form-control" id="rideCategory" required>
+                            <option value="">Select category</option>
+                            <option value="thrill">Thrill Ride</option>
+                            <option value="family">Family Ride</option>
+                            <option value="kids">Kids Ride</option>
+                            <option value="water">Water Ride</option>
+                            <option value="dark">Dark Ride</option>
+                            <option value="coaster">Roller Coaster</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="rideZone">Zone</label>
+                        <select class="form-control" id="rideZone" required>
+                            <option value="">Select zone</option>
+                            <option value="adventure">Adventure Zone</option>
+                            <option value="fantasy">Fantasy Land</option>
+                            <option value="water">Water World</option>
+                            <option value="thrill">Thrill Valley</option>
+                            <option value="kids">Kids Kingdom</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="minHeight">Minimum Height (cm)</label>
+                        <input type="number" class="form-control" id="minHeight" placeholder="e.g., 120" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="maxCapacity">Maximum Capacity</label>
+                        <input type="number" class="form-control" id="maxCapacity" placeholder="e.g., 4" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="duration">Ride Duration (minutes)</label>
+                        <input type="number" class="form-control" id="duration" placeholder="e.g., 3" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-control" id="status" required>
+                            <option value="operational">Operational</option>
+                            <option value="maintenance">Under Maintenance</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea class="form-control" id="description" rows="3" placeholder="Describe the ride experience"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="safetyNotes">Safety Notes</label>
+                    <textarea class="form-control" id="safetyNotes" rows="2" placeholder="Important safety information"></textarea>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <button type="button" class="btn btn-secondary" onclick="closeRideModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Ride</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+    <script>
+        // Sample ride data
+        const ridesData = [
+            { id: 1, name: "Sky Screamer", category: "thrill", zone: "thrill", status: "operational", minHeight: 140, capacity: 24, duration: 2, rating: 4.8, waitTime: 25, todayRiders: 420, icon: "fa-bolt", color: "#FF6B6B" },
+            { id: 2, name: "Ferris Wheel", category: "family", zone: "fantasy", status: "operational", minHeight: 100, capacity: 40, duration: 8, rating: 4.5, waitTime: 15, todayRiders: 380, icon: "fa-ferris-wheel", color: "#4ECDC4" },
+            { id: 3, name: "Water Splash", category: "water", zone: "water", status: "maintenance", minHeight: 120, capacity: 6, duration: 3, rating: 4.7, waitTime: 45, todayRiders: 0, icon: "fa-water", color: "#45B7D1" },
+            { id: 4, name: "Roller Coaster", category: "coaster", zone: "thrill", status: "operational", minHeight: 130, capacity: 20, duration: 2.5, rating: 4.9, waitTime: 60, todayRiders: 520, icon: "fa-mountain", color: "#96CEB4" },
+            { id: 5, name: "Bumper Cars", category: "family", zone: "kids", status: "operational", minHeight: 110, capacity: 16, duration: 4, rating: 4.3, waitTime: 20, todayRiders: 310, icon: "fa-car", color: "#FFEAA7" },
+            { id: 6, name: "Haunted Mansion", category: "dark", zone: "fantasy", status: "operational", minHeight: 120, capacity: 8, duration: 5, rating: 4.6, waitTime: 30, todayRiders: 290, icon: "fa-ghost", color: "#DDA0DD" },
+            { id: 7, name: "Kiddie Train", category: "kids", zone: "kids", status: "operational", minHeight: 90, capacity: 30, duration: 6, rating: 4.2, waitTime: 10, todayRiders: 240, icon: "fa-train", color: "#98D8C8" },
+            { id: 8, name: "Pirate Ship", category: "thrill", zone: "adventure", status: "closed", minHeight: 130, capacity: 40, duration: 3, rating: 4.7, waitTime: 0, todayRiders: 0, icon: "fa-ship", color: "#F7DC6F" }
+        ];
+
+        // Sample maintenance data
+        const maintenanceData = [
+            { id: 1, ride: "Water Splash", type: "Routine Check", priority: "medium", scheduled: "Dec 30, 2025", status: "In Progress", assigned: "Tech Team A" },
+            { id: 2, ride: "Pirate Ship", type: "Major Repair", priority: "high", scheduled: "Dec 29, 2025", status: "Completed", assigned: "Tech Team B" },
+            { id: 3, ride: "Sky Screamer", type: "Safety Inspection", priority: "low", scheduled: "Jan 2, 2026", status: "Scheduled", assigned: "Safety Team" },
+            { id: 4, ride: "Roller Coaster", type: "Electrical Check", priority: "medium", scheduled: "Dec 31, 2025", status: "Pending", assigned: "Tech Team C" },
+            { id: 5, ride: "Ferris Wheel", type: "Lubrication", priority: "low", scheduled: "Jan 3, 2026", status: "Scheduled", assigned: "Maintenance Crew" }
+        ];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('mobile-open');
+            });
+
+            // Populate rides grid
+            populateRidesGrid();
+
+            // Populate maintenance table
+            populateMaintenanceTable();
+
+            // Initialize charts
+            initializeCharts();
+
+            // Form submission
+            document.getElementById('rideForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveRide();
+            });
+
+            // Update stats in real-time
+            setInterval(updateStats, 10000);
+        });
+
+        // Populate rides grid
+        function populateRidesGrid() {
+            const ridesGrid = document.getElementById('ridesGrid');
+            ridesGrid.innerHTML = '';
+
+            ridesData.forEach(ride => {
+                const rideCard = createRideCard(ride);
+                ridesGrid.appendChild(rideCard);
+            });
+        }
+
+        // Create ride card element
+        function createRideCard(ride) {
+            const card = document.createElement('div');
+            card.className = 'ride-card';
+            
+            // Determine status badge
+            let statusClass = '';
+            let statusText = '';
+            switch(ride.status) {
+                case 'operational': 
+                    statusClass = 'ride-status-operational';
+                    statusText = 'Operational';
+                    break;
+                case 'maintenance': 
+                    statusClass = 'ride-status-maintenance';
+                    statusText = 'Under Maintenance';
+                    break;
+                case 'closed': 
+                    statusClass = 'ride-status-closed';
+                    statusText = 'Closed';
+                    break;
+            }
+            
+            // Determine category text
+            let categoryText = '';
+            switch(ride.category) {
+                case 'thrill': categoryText = 'Thrill Ride'; break;
+                case 'family': categoryText = 'Family Ride'; break;
+                case 'kids': categoryText = 'Kids Ride'; break;
+                case 'water': categoryText = 'Water Ride'; break;
+                case 'dark': categoryText = 'Dark Ride'; break;
+                case 'coaster': categoryText = 'Roller Coaster'; break;
+            }
+            
+            // Determine zone text
+            let zoneText = '';
+            switch(ride.zone) {
+                case 'adventure': zoneText = 'Adventure Zone'; break;
+                case 'fantasy': zoneText = 'Fantasy Land'; break;
+                case 'water': zoneText = 'Water World'; break;
+                case 'thrill': zoneText = 'Thrill Valley'; break;
+                case 'kids': zoneText = 'Kids Kingdom'; break;
+            }
+
+            card.innerHTML = `
+                <div class="ride-image" style="background: ${ride.color};">
+                    <i class="fas ${ride.icon}"></i>
+                    <span class="ride-badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="ride-card-content">
+                    <h3 class="ride-title">${ride.name}</h3>
+                    <div class="ride-meta">
+                        <span class="ride-category">${categoryText}</span>
+                        <div class="ride-rating">
+                            <i class="fas fa-star"></i> ${ride.rating}
+                        </div>
+                    </div>
+                    <div class="ride-details">
+                        <div class="ride-detail">
+                            <i class="fas fa-ruler-vertical"></i>
+                            <span>Min: ${ride.minHeight}cm</span>
+                        </div>
+                        <div class="ride-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Capacity: ${ride.capacity}</span>
+                        </div>
+                        <div class="ride-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>${ride.duration} min</span>
+                        </div>
+                        <div class="ride-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${zoneText}</span>
+                        </div>
+                    </div>
+                    <div class="ride-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${ride.todayRiders}</div>
+                            <div class="stat-label">Today's Riders</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${ride.waitTime}</div>
+                            <div class="stat-label">Wait Time (min)</div>
+                        </div>
+                    </div>
+                    <div class="ride-actions">
+                        <button class="ride-btn ride-btn-primary" onclick="viewRideDetails(${ride.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="ride-btn ride-btn-secondary" onclick="editRide(${ride.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="ride-btn ride-btn-secondary" onclick="toggleRideStatus(${ride.id})">
+                            <i class="fas fa-power-off"></i> Status
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Populate maintenance table
+        function populateMaintenanceTable() {
+            const tableBody = document.getElementById('maintenanceTableBody');
+            tableBody.innerHTML = '';
+
+            maintenanceData.forEach(maintenance => {
+                const row = document.createElement('tr');
+                
+                // Determine priority class
+                let priorityClass = '';
+                switch(maintenance.priority) {
+                    case 'high': priorityClass = 'priority-high'; break;
+                    case 'medium': priorityClass = 'priority-medium'; break;
+                    case 'low': priorityClass = 'priority-low'; break;
+                }
+                
+                // Determine status badge
+                let statusClass = '';
+                let statusIcon = '';
+                switch(maintenance.status) {
+                    case 'Completed': 
+                        statusClass = 'status-active';
+                        statusIcon = 'fa-check-circle';
+                        break;
+                    case 'In Progress': 
+                        statusClass = 'status-used';
+                        statusIcon = 'fa-spinner';
+                        break;
+                    case 'Scheduled': 
+                        statusClass = 'status-expired';
+                        statusIcon = 'fa-calendar-alt';
+                        break;
+                    case 'Pending': 
+                        statusClass = 'status-refunded';
+                        statusIcon = 'fa-clock';
+                        break;
+                }
+
+                row.innerHTML = `
+                    <td><strong>${maintenance.ride}</strong></td>
+                    <td>${maintenance.type}</td>
+                    <td><span class="${priorityClass}">${maintenance.priority.toUpperCase()}</span></td>
+                    <td>${maintenance.scheduled}</td>
+                    <td><span class="status-badge ${statusClass}"><i class="fas ${statusIcon} me-1"></i> ${maintenance.status}</span></td>
+                    <td>${maintenance.assigned}</td>
+                    <td>
+                        <div class="action-buttons-cell">
+                            <button class="action-btn action-view" onclick="viewMaintenance(${maintenance.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn action-print" onclick="updateMaintenance(${maintenance.id})" title="Update Status">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Utilization Chart
+            const utilizationOptions = {
+                series: [{
+                    name: 'Riders',
+                    data: ridesData.map(r => r.todayRiders)
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 300,
+                    toolbar: { show: false }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 8,
+                        columnWidth: '60%',
+                    }
+                },
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: ridesData.map(r => r.name)
+                },
+                yaxis: {
+                    title: { text: 'Number of Riders' }
+                },
+                colors: ['#0288d1']
+            };
+
+            const utilizationChart = new ApexCharts(document.querySelector("#utilizationChart"), utilizationOptions);
+            utilizationChart.render();
+
+            // Wait Time Chart
+            const waitTimeOptions = {
+                series: [{
+                    name: 'Wait Time',
+                    data: ridesData.map(r => r.waitTime)
+                }],
+                chart: {
+                    type: 'line',
+                    height: 300,
+                    toolbar: { show: false }
+                },
+                stroke: {
+                    width: 3,
+                    curve: 'smooth'
+                },
+                xaxis: {
+                    categories: ridesData.map(r => r.name)
+                },
+                yaxis: {
+                    title: { text: 'Wait Time (minutes)' }
+                },
+                colors: ['#4fc3f7']
+            };
+
+            const waitTimeChart = new ApexCharts(document.querySelector("#waitTimeChart"), waitTimeOptions);
+            waitTimeChart.render();
+        }
+
+        // Update stats
+        function updateStats() {
+            // Update today's riders
+            const totalRiders = document.getElementById('totalRiders');
+            const currentRiders = parseInt(totalRiders.textContent.replace(/[K,]/g, '')) * 1000;
+            const randomChange = Math.floor(Math.random() * 101) - 50; // -50 to +50
+            const newRiders = Math.max(0, currentRiders + randomChange);
+            totalRiders.textContent = `${(newRiders / 1000).toFixed(1)}K`;
+        }
+
+        // Filter functions
+        function applyRideFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const zone = document.getElementById('zoneFilter').value;
+            const capacity = document.getElementById('capacityFilter').value;
+            
+            // Show alert with filter values
+            alert(`Filters applied:\nStatus: ${status}\nZone: ${zone}\nCapacity: ${capacity}`);
+            
+            // Here you would filter the ridesData array and re-render the grid
+        }
+
+        function resetRideFilters() {
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('zoneFilter').value = 'all';
+            document.getElementById('capacityFilter').value = 'all';
+            
+            // Reset grid to show all rides
+            populateRidesGrid();
+        }
+
+        // Modal functions
+        function openAddRideModal() {
+            document.getElementById('rideModal').style.display = 'flex';
+            document.getElementById('modalTitle').textContent = 'Add New Ride';
+            document.getElementById('rideForm').reset();
+        }
+
+        function closeRideModal() {
+            document.getElementById('rideModal').style.display = 'none';
+        }
+
+        function saveRide() {
+            const rideName = document.getElementById('rideName').value;
+            alert(`Ride "${rideName}" has been saved successfully!`);
+            closeRideModal();
+            
+            // In real app, this would add to ridesData and re-render grid
+        }
+
+        // Action functions
+        function scheduleMaintenance() {
+            alert('Opening maintenance scheduling form...');
+        }
+
+        function viewRideDetails(rideId) {
+            const ride = ridesData.find(r => r.id === rideId);
+            alert(`Viewing details for: ${ride.name}\nStatus: ${ride.status}\nToday's Riders: ${ride.todayRiders}\nWait Time: ${ride.waitTime} minutes`);
+        }
+
+        function editRide(rideId) {
+            const ride = ridesData.find(r => r.id === rideId);
+            document.getElementById('rideModal').style.display = 'flex';
+            document.getElementById('modalTitle').textContent = `Edit Ride: ${ride.name}`;
+            
+            // Populate form with ride data
+            document.getElementById('rideName').value = ride.name;
+            // ... populate other fields
+        }
+
+        function toggleRideStatus(rideId) {
+            const ride = ridesData.find(r => r.id === rideId);
+            const newStatus = prompt(`Current status: ${ride.status}\nEnter new status (operational/maintenance/closed):`, ride.status);
+            
+            if (newStatus && ['operational', 'maintenance', 'closed'].includes(newStatus)) {
+                alert(`Ride "${ride.name}" status changed to ${newStatus}`);
+                // In real app, update ride status and re-render grid
+            }
+        }
+
+        function viewAllMaintenance() {
+            alert('Opening full maintenance log...');
+        }
+
+        function viewMaintenance(maintenanceId) {
+            const maintenance = maintenanceData.find(m => m.id === maintenanceId);
+            alert(`Maintenance Details:\nRide: ${maintenance.ride}\nType: ${maintenance.type}\nPriority: ${maintenance.priority}\nStatus: ${maintenance.status}`);
+        }
+
+        function updateMaintenance(maintenanceId) {
+            const maintenance = maintenanceData.find(m => m.id === maintenanceId);
+            const newStatus = prompt(`Current status: ${maintenance.status}\nEnter new status:`, maintenance.status);
+            
+            if (newStatus) {
+                alert(`Maintenance for "${maintenance.ride}" updated to ${newStatus}`);
+                // In real app, update maintenance status and re-render table
+            }
+        }
+    </script>
+</body>
+</html>

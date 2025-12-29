@@ -1,0 +1,633 @@
+:root {
+    --sky-blue: #4fc3f7;
+    --primary-blue: #0288d1;
+    --dark-blue: #01579b;
+    --light-bg: #e3f2fd;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Header */
+.pos-header {
+    background: white;
+    border-radius: 15px;
+    padding: 20px 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(2, 136, 209, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.park-logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark-blue);
+}
+
+.park-logo span {
+    color: var(--sky-blue);
+}
+
+.terminal-info {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.terminal-status {
+    background: var(--light-bg);
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--success-green);
+    margin-right: 10px;
+    animation: pulse 2s infinite;
+}
+
+.staff-info {
+    display: flex;
+    align-items: center;
+}
+
+.staff-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky-blue), var(--primary-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    margin-right: 15px;
+}
+
+/* Main POS Container */
+.pos-container {
+    display: flex;
+    gap: 25px;
+    height: calc(100vh - 170px);
+    min-height: 600px;
+}
+
+/* Ticket Selection Panel */
+.ticket-panel {
+    flex: 2;
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(2, 136, 209, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.section-title {
+    color: var(--dark-blue);
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--light-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticket-categories {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    background: var(--light-bg);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    color: var(--dark-blue);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.category-btn:hover {
+    background: var(--sky-blue);
+    color: white;
+}
+
+.category-btn.active {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+    padding-right: 10px;
+    flex: 1;
+}
+
+.ticket-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid var(--light-bg);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.ticket-card:hover {
+    border-color: var(--sky-blue);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(79, 195, 247, 0.2);
+}
+
+.ticket-card.selected {
+    border-color: var(--primary-blue);
+    background: rgba(2, 136, 209, 0.05);
+}
+
+.ticket-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 5px;
+}
+
+.ticket-badge:not([class*="bg-"]) {
+    background: var(--warning-orange);
+}
+
+.ticket-badge.THRILL {
+    background: #ff4757; /* Red for thrill rides */
+}
+
+.ticket-badge.EXTREME {
+    background: #9c27b0; /* Purple for extreme rides */
+}
+
+.ticket-badge.VR {
+    background: #2196f3; /* Blue for VR experiences */
+}
+
+.ticket-badge.NEW {
+    background: #4caf50; /* Green for new rides */
+}
+
+.ticket-badge.BEST {
+    background: #ff9800; /* Orange for best sellers */
+}
+
+.ticket-badge.SAVE {
+    background: #f44336; /* Red for savings */
+}
+
+.ticket-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-blue);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.ticket-title {
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.ticket-desc {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    height: 40px;
+    overflow: hidden;
+}
+
+.ticket-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.ticket-price span {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 400;
+}
+
+/* Cart Panel */
+.cart-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    max-width: 450px;
+}
+
+.cart-summary {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(2, 136, 209, 0.15);
+    display: flex;
+    flex-direction: column;
+    height: 65%;
+    min-height: 400px;
+}
+
+.cart-items-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.cart-items {
+    min-height: 100px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s;
+}
+
+.cart-item:hover {
+    background: #f8f9fa;
+}
+
+.cart-item-info h6 {
+    margin-bottom: 5px;
+    color: var(--dark-blue);
+    font-size: 0.95rem;
+}
+
+.cart-item-info p {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qty-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--sky-blue);
+    background: white;
+    color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.qty-btn:hover {
+    background: var(--sky-blue);
+    color: white;
+}
+
+.qty-value {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.cart-total {
+    background: var(--light-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: auto;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.total-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-blue);
+    text-align: right;
+    margin-top: 10px;
+}
+
+/* Customer & Payment Panel */
+.customer-panel {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(2, 136, 209, 0.15);
+    height: 35%;
+    min-height: 300px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    color: var(--dark-blue);
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    border-color: var(--sky-blue);
+    box-shadow: 0 0 0 0.25rem rgba(79, 195, 247, 0.25);
+}
+
+.payment-methods {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.payment-btn {
+    flex: 1;
+    min-width: 100px;
+    background: var(--light-bg);
+    border: 2px solid transparent;
+    padding: 10px;
+    border-radius: 10px;
+    color: var(--dark-blue);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.payment-btn:hover {
+    background: var(--sky-blue);
+    color: white;
+}
+
+.payment-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--dark-blue);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-pos {
+    flex: 1;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-print {
+    background: linear-gradient(to right, var(--primary-blue), var(--dark-blue));
+    color: white;
+}
+
+.btn-print:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 14px rgba(2, 136, 209, 0.4);
+}
+
+.btn-clear {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #ddd;
+}
+
+.btn-clear:hover {
+    background: #e9ecef;
+    transform: translateY(-3px);
+}
+
+/* Ticket Preview Modal */
+.ticket-preview {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.ticket-preview.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.ticket-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.ticket-body {
+    padding: 30px;
+}
+
+.ticket-qr {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.ticket-qr-placeholder {
+    width: 200px;
+    height: 200px;
+    background: #f8f9fa;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.ticket-details {
+    margin: 25px 0;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 999;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .pos-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .cart-panel {
+        max-width: 100%;
+    }
+    
+    .cart-summary, .customer-panel {
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .pos-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .terminal-info {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .ticket-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .ticket-search .input-group {
+        width: 100% !important;
+    }
+}
+
+/* Cart item animation */
+.cart-item {
+    animation: slideIn 0.3s ease-out;
+}
